@@ -83,14 +83,14 @@ class Calculadora:
         self.frame_pantalla.grid_rowconfigure(0, weight=1)
         self.frame_pantalla.grid_rowconfigure(1, weight=1)
 
-        self.pantalla_operacion = tk.Label(
+        self.pantalla_operacion = tk.Entry(
             self.frame_pantalla,
             justify="right",
             font=self.fuente_operacion,
             bg="#2B2B2B",
             fg="#FFFFFF",
-            anchor="e",
-            wraplength=540,
+            bd=0,
+            insertbackground="#FFFFFF",
         )
         self.pantalla_operacion.grid(row=0, column=0, sticky="nsew")
 
@@ -154,7 +154,6 @@ class Calculadora:
             boton.bind("<Enter>", lambda e, b=boton: self.on_enter(b))
             boton.bind("<Leave>", lambda e, b=boton: self.on_leave(b))
 
-            # Agregar tooltips
             if texto in ["sin", "cos", "tan", "√"]:
                 Tooltip(boton, text=f"Calcular {texto}")
             elif texto == "±":
@@ -247,9 +246,9 @@ class Calculadora:
         elif key == "^":
             self.agregar_caracter("**")
         elif key == "π":
-            self.agregar_caracter("math.pi")
+            self.agregar_caracter("π")
         elif key == "e":
-            self.agregar_caracter("math.e")
+            self.agregar_caracter("e")
         elif key == "M+":
             self.memoria_sumar()
         elif key == "M-":
@@ -270,23 +269,21 @@ class Calculadora:
             self.agregar_caracter("-")
         else:
             self.agregar_caracter(key)
+        self.pantalla_operacion.delete(0, tk.END)
+        self.pantalla_operacion.insert(tk.END, self.operacion)
 
     def calcular(self):
         try:
-            # Crear una copia de la operación y reemplazar las funciones
-            operacion_evaluar = self.operacion.replace("sqrt(", "math.sqrt(")
-            operacion_evaluar = operacion_evaluar.replace("log10(", "math.log10(")
-            operacion_evaluar = operacion_evaluar.replace(
-                "sin(", "math.sin(math.radians("
-            )
-            operacion_evaluar = operacion_evaluar.replace(
-                "cos(", "math.cos(math.radians("
-            )
-            operacion_evaluar = operacion_evaluar.replace(
-                "tan(", "math.tan(math.radians("
-            )
+            operacion_evaluar = self.operacion
+            operacion_evaluar = operacion_evaluar.replace("√", "math.sqrt")
+            operacion_evaluar = operacion_evaluar.replace("log", "math.log10")
+            operacion_evaluar = operacion_evaluar.replace("π", "math.pi")
+            operacion_evaluar = operacion_evaluar.replace("e", "math.e")
 
-            # Evaluar la operación
+            for func in ["sin", "cos", "tan"]:
+                math_func = f"math.{func[0:3]}"
+                operacion_evaluar = operacion_evaluar.replace(func, math_func)
+
             self.resultado = str(
                 eval(operacion_evaluar, {"math": math, "__builtins__": None})
             )
@@ -303,7 +300,7 @@ class Calculadora:
     def borrar(self):
         self.operaciones_deshechas.append(self.operacion)
         self.operacion = ""
-        self.pantalla_operacion.config(text="")
+        self.pantalla_operacion.delete(0, tk.END)
         self.pantalla_resultado.config(text="")
         self.operaciones_rehechas.clear()
 
@@ -311,7 +308,8 @@ class Calculadora:
         if self.operacion:
             self.operaciones_deshechas.append(self.operacion)
             self.operacion = self.operacion[:-1]
-            self.pantalla_operacion.config(text=self.operacion)
+            self.pantalla_operacion.delete(0, tk.END)
+            self.pantalla_operacion.insert(tk.END, self.operacion)
             self.actualizar_resultado()
             self.operaciones_rehechas.clear()
 
@@ -321,14 +319,16 @@ class Calculadora:
             self.operacion = self.operacion[1:]
         elif self.operacion:
             self.operacion = "-" + self.operacion
-        self.pantalla_operacion.config(text=self.operacion)
+        self.pantalla_operacion.delete(0, tk.END)
+        self.pantalla_operacion.insert(tk.END, self.operacion)
         self.actualizar_resultado()
         self.operaciones_rehechas.clear()
 
     def agregar_caracter(self, caracter):
         self.operaciones_deshechas.append(self.operacion)
         self.operacion += str(caracter)
-        self.pantalla_operacion.config(text=self.operacion)
+        self.pantalla_operacion.delete(0, tk.END)
+        self.pantalla_operacion.insert(tk.END, self.operacion)
         self.actualizar_resultado()
         self.operaciones_rehechas.clear()
 
@@ -336,19 +336,19 @@ class Calculadora:
         self.operaciones_deshechas.append(self.operacion)
 
         if funcion == "√":
-            self.operacion += "sqrt("
+            self.operacion += "√("
+            cursor_pos = len(self.operacion)
         elif funcion == "log":
-            self.operacion += "log10("
+            self.operacion += "log("
+            cursor_pos = len(self.operacion)
         elif funcion in ["sin", "cos", "tan"]:
             self.operacion += f"{funcion}("
+            cursor_pos = len(self.operacion)
 
-        self.pantalla_operacion.config(text=self.operacion)
-
-        self.pantalla_operacion.after(100, lambda: self.pantalla_operacion.focus_set())
-        self.pantalla_operacion.select_range(
-            len(self.operacion), len(self.operacion)
-        )  # Seleccionar el texto
-
+        self.operacion += ")"
+        self.pantalla_operacion.delete(0, tk.END)
+        self.pantalla_operacion.insert(tk.END, self.operacion)
+        self.pantalla_operacion.icursor(cursor_pos)
         self.operaciones_rehechas.clear()
 
     def memoria_sumar(self):
@@ -362,7 +362,8 @@ class Calculadora:
     def memoria_recuperar(self):
         self.operaciones_deshechas.append(self.operacion)
         self.operacion = str(self.memoria)
-        self.pantalla_operacion.config(text=self.operacion)
+        self.pantalla_operacion.delete(0, tk.END)
+        self.pantalla_operacion.insert(tk.END, self.operacion)
         self.actualizar_resultado()
         self.operaciones_rehechas.clear()
 
@@ -372,13 +373,36 @@ class Calculadora:
     def actualizar_resultado(self):
         try:
             if self.operacion:
-                self.resultado = str(eval(self.operacion))
+                operacion_evaluar = self.operacion
+                operacion_evaluar = operacion_evaluar.replace("√", "math.sqrt")
+                operacion_evaluar = operacion_evaluar.replace("log", "math.log10")
+                operacion_evaluar = operacion_evaluar.replace("π", "math.pi")
+                operacion_evaluar = operacion_evaluar.replace("e", "math.e")
+
+                for func in ["sin", "cos", "tan"]:
+                    math_func = f"math.{func[0:3]}"
+                    operacion_evaluar = operacion_evaluar.replace(func, math_func)
+
+                self.resultado = str(
+                    eval(operacion_evaluar, {"math": math, "__builtins__": None})
+                )
                 self.resultado = self.formatear_numero(float(self.resultado))
                 self.pantalla_resultado.config(text=self.resultado)
             else:
                 self.pantalla_resultado.config(text="")
         except:
             self.pantalla_resultado.config(text="")
+
+    def find_matching_paren(self, string, start):
+        count = 0
+        for i in range(start, len(string)):
+            if string[i] == "(":
+                count += 1
+            elif string[i] == ")":
+                count -= 1
+                if count == 0:
+                    return i
+        return -1
 
     def tecla_presionada(self, event):
         if event.char.isdigit() or event.char in [
@@ -445,7 +469,8 @@ class Calculadora:
             operacion_actual = self.operacion
             self.operacion = self.operaciones_deshechas.pop()
             self.operaciones_rehechas.append(operacion_actual)
-            self.pantalla_operacion.config(text=self.operacion)
+            self.pantalla_operacion.delete(0, tk.END)
+            self.pantalla_operacion.insert(tk.END, self.operacion)
             self.actualizar_resultado()
 
     def rehacer(self):
@@ -453,17 +478,17 @@ class Calculadora:
             operacion_actual = self.operacion
             self.operacion = self.operaciones_rehechas.pop()
             self.operaciones_deshechas.append(operacion_actual)
-            self.pantalla_operacion.config(text=self.operacion)
+            self.pantalla_operacion.delete(0, tk.END)
+            self.pantalla_operacion.insert(tk.END, self.operacion)
             self.actualizar_resultado()
 
     def actualizar_historial(self):
         self.historial_texto.delete(1.0, tk.END)
-        for calculo in self.historial[-5:]:  # Mostrar los últimos 5 cálculos
+        for calculo in self.historial[-5:]:
             self.historial_texto.insert(tk.END, calculo + "\n")
-        self.historial_texto.see(tk.END)  # Desplazar al final del historial
+        self.historial_texto.see(tk.END)
 
 
-# Crear la ventana principal
 root = tk.Tk()
 calculadora = Calculadora(root)
 root.mainloop()
