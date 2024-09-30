@@ -16,11 +16,9 @@ class Tooltip:
         x, y, _, _ = self.widget.bbox("insert")
         x += self.widget.winfo_rootx() + 25
         y += self.widget.winfo_rooty() + 25
-
         self.tooltip = tk.Toplevel(self.widget)
         self.tooltip.wm_overrideredirect(True)
         self.tooltip.wm_geometry(f"+{x}+{y}")
-
         label = tk.Label(
             self.tooltip,
             text=self.text,
@@ -40,17 +38,14 @@ class Calculadora:
     def __init__(self, master):
         self.master = master
         master.title("Calculadora Científica")
-
         self.modo_oscuro = True
         self.memoria = 0
         self.historial = []
         self.operaciones_deshechas = []
         self.operaciones_rehechas = []
-
         self.fuente_pantalla = font.Font(family="Arial", size=36, weight="bold")
         self.fuente_operacion = font.Font(family="Arial", size=24)
         self.fuente_botones = font.Font(family="Arial", size=16)
-
         master.configure(bg="#1E1E1E")
         master.grid_columnconfigure(0, weight=3)
         master.grid_columnconfigure(1, weight=1)
@@ -58,12 +53,9 @@ class Calculadora:
         master.grid_rowconfigure(1, weight=1)
         master.grid_rowconfigure(2, weight=3)
         master.grid_rowconfigure(3, weight=1)
-
         master.minsize(800, 600)
-
         self.frame_modo = tk.Frame(master, bg="#1E1E1E")
         self.frame_modo.grid(row=0, column=0, columnspan=2, sticky="ne", padx=5, pady=5)
-
         self.boton_modo = tk.Button(
             self.frame_modo,
             text="☀",
@@ -76,13 +68,11 @@ class Calculadora:
             font=("Arial", 20),
         )
         self.boton_modo.pack()
-
         self.frame_pantalla = tk.Frame(master, bg="#1E1E1E")
         self.frame_pantalla.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
         self.frame_pantalla.grid_columnconfigure(0, weight=1)
         self.frame_pantalla.grid_rowconfigure(0, weight=1)
         self.frame_pantalla.grid_rowconfigure(1, weight=1)
-
         self.pantalla_operacion = tk.Entry(
             self.frame_pantalla,
             justify="right",
@@ -93,7 +83,6 @@ class Calculadora:
             insertbackground="#FFFFFF",
         )
         self.pantalla_operacion.grid(row=0, column=0, sticky="nsew")
-
         self.pantalla_resultado = tk.Label(
             self.frame_pantalla,
             justify="right",
@@ -104,10 +93,8 @@ class Calculadora:
             wraplength=540,
         )
         self.pantalla_resultado.grid(row=1, column=0, sticky="nsew")
-
         self.frame_botones = tk.Frame(master, bg="#1E1E1E")
         self.frame_botones.grid(row=2, column=0, sticky="nsew", padx=10, pady=10)
-
         botones = [
             ("C", 0, 0),
             ("⌫", 0, 1),
@@ -135,7 +122,6 @@ class Calculadora:
             (".", 4, 3),
             ("=", 4, 4),
         ]
-
         for texto, fila, columna in botones:
             comando = lambda x=texto: self.click(x)
             boton = tk.Button(
@@ -153,19 +139,15 @@ class Calculadora:
             boton.grid(row=fila, column=columna, sticky="nsew", padx=2, pady=2)
             boton.bind("<Enter>", lambda e, b=boton: self.on_enter(b))
             boton.bind("<Leave>", lambda e, b=boton: self.on_leave(b))
-
             if texto in ["sin", "cos", "tan", "√"]:
                 Tooltip(boton, text=f"Calcular {texto}")
             elif texto == "±":
                 Tooltip(boton, text="Cambiar signo")
-
         for i in range(5):
             self.frame_botones.grid_rowconfigure(i, weight=1)
             self.frame_botones.grid_columnconfigure(i, weight=1)
-
         self.frame_funciones = tk.Frame(master, bg="#1E1E1E")
         self.frame_funciones.grid(row=3, column=0, sticky="nsew", padx=10, pady=10)
-
         funciones = [
             ("^", "Potencia"),
             ("π", "Pi"),
@@ -178,7 +160,6 @@ class Calculadora:
             ("↩", "Deshacer"),
             ("↪", "Rehacer"),
         ]
-
         for i, (texto, tooltip) in enumerate(funciones):
             comando = lambda x=texto: self.click(x)
             boton = tk.Button(
@@ -197,17 +178,14 @@ class Calculadora:
             boton.bind("<Enter>", lambda e, b=boton: self.on_enter(b))
             boton.bind("<Leave>", lambda e, b=boton: self.on_leave(b))
             Tooltip(boton, text=tooltip)
-
         for i in range(2):
             self.frame_funciones.grid_rowconfigure(i, weight=1)
         for i in range(5):
             self.frame_funciones.grid_columnconfigure(i, weight=1)
-
         self.frame_historial = tk.Frame(master, bg="#1E1E1E")
         self.frame_historial.grid(
             row=1, column=1, rowspan=3, sticky="nsew", padx=10, pady=10
         )
-
         self.historial_label = tk.Label(
             self.frame_historial,
             text="Historial",
@@ -216,7 +194,6 @@ class Calculadora:
             font=("Arial", 14, "bold"),
         )
         self.historial_label.pack(pady=(0, 5))
-
         self.historial_texto = tk.Text(
             self.frame_historial,
             bg="#2B2B2B",
@@ -226,15 +203,12 @@ class Calculadora:
             wrap=tk.WORD,
         )
         self.historial_texto.pack(fill=tk.BOTH, expand=True)
-
         self.operacion = ""
         self.resultado = ""
-
         master.bind("<Return>", lambda event: self.click("="))
         master.bind("<BackSpace>", lambda event: self.click("⌫"))
         master.bind("<Escape>", lambda event: self.click("C"))
         master.bind("<Key>", self.tecla_presionada)
-
         self.cambiar_modo()
 
     def on_enter(self, button):
@@ -290,11 +264,9 @@ class Calculadora:
             operacion_evaluar = operacion_evaluar.replace("log", "math.log10")
             operacion_evaluar = operacion_evaluar.replace("π", "math.pi")
             operacion_evaluar = operacion_evaluar.replace("e", "math.e")
-
             for func in ["sin", "cos", "tan"]:
                 math_func = f"math.{func[0:3]}"
                 operacion_evaluar = operacion_evaluar.replace(func, math_func)
-
             self.resultado = str(
                 eval(operacion_evaluar, {"math": math, "__builtins__": None})
             )
@@ -355,7 +327,6 @@ class Calculadora:
         elif funcion in ["sin", "cos", "tan"]:
             self.operacion += f"{funcion}()"
             cursor_pos = len(self.operacion) - 1
-
         self.pantalla_operacion.delete(0, tk.END)
         self.pantalla_operacion.insert(tk.END, self.operacion)
         self.pantalla_operacion.icursor(cursor_pos)
@@ -388,11 +359,9 @@ class Calculadora:
                 operacion_evaluar = operacion_evaluar.replace("log", "math.log10")
                 operacion_evaluar = operacion_evaluar.replace("π", "math.pi")
                 operacion_evaluar = operacion_evaluar.replace("e", "math.e")
-
                 for func in ["sin", "cos", "tan"]:
                     math_func = f"math.{func[0:3]}"
                     operacion_evaluar = operacion_evaluar.replace(func, math_func)
-
                 self.resultado = str(
                     eval(operacion_evaluar, {"math": math, "__builtins__": None})
                 )
@@ -447,7 +416,6 @@ class Calculadora:
             btn_bg = "#E0E0E0"
             pantalla_bg = "#FFFFFF"
             self.boton_modo.config(text="☾")
-
         self.master.configure(bg=bg_color)
         self.frame_pantalla.configure(bg=bg_color)
         self.frame_botones.configure(bg=bg_color)
@@ -462,7 +430,6 @@ class Calculadora:
             activebackground=bg_color,
             activeforeground=fg_color,
         )
-
         for frame in [self.frame_botones, self.frame_funciones]:
             for widget in frame.winfo_children():
                 if isinstance(widget, tk.Button):
