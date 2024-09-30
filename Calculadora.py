@@ -52,17 +52,17 @@ class Calculadora:
         self.fuente_botones = font.Font(family="Arial", size=16)
 
         master.configure(bg="#1E1E1E")
-        master.grid_columnconfigure(0, weight=1)
+        master.grid_columnconfigure(0, weight=3)
+        master.grid_columnconfigure(1, weight=1)
         master.grid_rowconfigure(0, weight=0)
         master.grid_rowconfigure(1, weight=1)
         master.grid_rowconfigure(2, weight=3)
         master.grid_rowconfigure(3, weight=1)
-        master.grid_rowconfigure(4, weight=1)
 
-        master.minsize(600, 800)
+        master.minsize(800, 600)
 
         self.frame_modo = tk.Frame(master, bg="#1E1E1E")
-        self.frame_modo.grid(row=0, column=0, sticky="ne", padx=10, pady=10)
+        self.frame_modo.grid(row=0, column=0, columnspan=2, sticky="ne", padx=5, pady=5)
 
         self.boton_modo = tk.Button(
             self.frame_modo,
@@ -78,7 +78,7 @@ class Calculadora:
         self.boton_modo.pack()
 
         self.frame_pantalla = tk.Frame(master, bg="#1E1E1E")
-        self.frame_pantalla.grid(row=1, column=0, sticky="nsew", padx=20, pady=20)
+        self.frame_pantalla.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
         self.frame_pantalla.grid_columnconfigure(0, weight=1)
         self.frame_pantalla.grid_rowconfigure(0, weight=1)
         self.frame_pantalla.grid_rowconfigure(1, weight=1)
@@ -106,7 +106,7 @@ class Calculadora:
         self.pantalla_resultado.grid(row=1, column=0, sticky="nsew")
 
         self.frame_botones = tk.Frame(master, bg="#1E1E1E")
-        self.frame_botones.grid(row=2, column=0, sticky="nsew", padx=20, pady=20)
+        self.frame_botones.grid(row=2, column=0, sticky="nsew", padx=10, pady=10)
 
         botones = [
             ("C", 0, 0),
@@ -164,7 +164,7 @@ class Calculadora:
             self.frame_botones.grid_columnconfigure(i, weight=1)
 
         self.frame_funciones = tk.Frame(master, bg="#1E1E1E")
-        self.frame_funciones.grid(row=3, column=0, sticky="nsew", padx=20, pady=20)
+        self.frame_funciones.grid(row=3, column=0, sticky="nsew", padx=10, pady=10)
 
         funciones = [
             ("^", "Potencia"),
@@ -204,14 +204,25 @@ class Calculadora:
             self.frame_funciones.grid_columnconfigure(i, weight=1)
 
         self.frame_historial = tk.Frame(master, bg="#1E1E1E")
-        self.frame_historial.grid(row=4, column=0, sticky="nsew", padx=20, pady=20)
+        self.frame_historial.grid(
+            row=1, column=1, rowspan=3, sticky="nsew", padx=10, pady=10
+        )
+
+        self.historial_label = tk.Label(
+            self.frame_historial,
+            text="Historial",
+            bg="#1E1E1E",
+            fg="#FFFFFF",
+            font=("Arial", 14, "bold"),
+        )
+        self.historial_label.pack(pady=(0, 5))
 
         self.historial_texto = tk.Text(
             self.frame_historial,
             bg="#2B2B2B",
             fg="#FFFFFF",
             font=("Arial", 12),
-            height=5,
+            width=20,
             wrap=tk.WORD,
         )
         self.historial_texto.pack(fill=tk.BOTH, expand=True)
@@ -337,10 +348,10 @@ class Calculadora:
 
         if funcion == "√":
             self.operacion += "√("
-            cursor_pos = len(self.operacion)
+            cursor_pos = len(self.operacion) - 1
         elif funcion == "log":
             self.operacion += "log("
-            cursor_pos = len(self.operacion)
+            cursor_pos = len(self.operacion) - 1
         elif funcion in ["sin", "cos", "tan"]:
             self.operacion += f"{funcion}()"
             cursor_pos = len(self.operacion) - 1
