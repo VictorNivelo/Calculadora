@@ -4,9 +4,9 @@
 Esta Calculadora Científica Avanzada es una aplicación de escritorio robusta y versátil, desarrollada en Python con Tkinter. Ofrece una amplia gama de funcionalidades matemáticas en una interfaz intuitiva y personalizable, diseñada para estudiantes, profesionales y entusiastas de las matemáticas.
 
 ## Capturas de Pantalla
-![Captura de pantalla de la calculadora en modo oscuro](https://github.com/VictorNivelo/Calculadora/blob/main/Captura%20de%20pantalla%202024-09-29%20200124.png)
+![Captura de pantalla de la calculadora en modo oscuro](https://github.com/VictorNivelo/Calculadora/blob/main/Imagenes/Captura%20de%20pantalla%202024-09-30%20090757.png)
 
-![Captura de pantalla de la calculadora en modo claro](https://github.com/VictorNivelo/Calculadora/blob/main/Captura%20de%20pantalla%202024-09-29%20200153.png)
+![Captura de pantalla de la calculadora en modo claro](https://github.com/VictorNivelo/Calculadora/blob/main/Imagenes/Captura%20de%20pantalla%202024-09-30%20090747.png)
 
 
 ## Características Principales
