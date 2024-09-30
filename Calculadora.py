@@ -342,10 +342,9 @@ class Calculadora:
             self.operacion += "log("
             cursor_pos = len(self.operacion)
         elif funcion in ["sin", "cos", "tan"]:
-            self.operacion += f"{funcion}("
-            cursor_pos = len(self.operacion)
+            self.operacion += f"{funcion}()"
+            cursor_pos = len(self.operacion) - 1
 
-        self.operacion += ")"
         self.pantalla_operacion.delete(0, tk.END)
         self.pantalla_operacion.insert(tk.END, self.operacion)
         self.pantalla_operacion.icursor(cursor_pos)
